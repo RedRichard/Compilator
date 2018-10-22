@@ -1,0 +1,19 @@
+$$ Este es un comentario
+
+Entero funcionU()
+    Entero variablelll;
+    este999;
+    Entero num := 1;
+    Real re := 19.9E9;
+    imprimir("Introduzca una oracion: ");
+    invertir();
+A
+Entero invertir()I
+    Cadena c; {
+    escanea("%c", c);}}}
+    variable999999
+    Si(c .DIF. "\n")
+        invertir();
+        imprimir("%c", c);
+
+$$ Otro comentario

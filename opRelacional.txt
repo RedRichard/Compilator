@@ -1,0 +1,6 @@
+.DIF.
+.IGL.
+.MN.
+.MNI.
+.MY.
+.MYI.

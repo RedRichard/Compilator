@@ -1,0 +1,11 @@
+Bul
+Cadena
+Cierto
+Entero
+Falso
+Haz
+Mientras
+Para
+Real
+Si
+Sino
