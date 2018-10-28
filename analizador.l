@@ -23,8 +23,10 @@ void agregarAtomo(char *caracter);
 FILE *archSal;          //Archivo de salida
 //Arreglos de cadenas para el almacenamiento de cada tipo de componente lexico:
 char** palabrasReservadas;
+char** atomosPalabrasReservadas;
 char** identificadores;
 char** operadoresRelacionales;
+char** atomosOperadoresRelacionales;
 char** constantesCadena;
 char** constantesNumerica;
 char** constantesReal;
@@ -34,7 +36,7 @@ int numPalRes, numOpRel, numIdentficiadores, numConsCadena, numConsNum, numConsR
 int lineCount = 1;          //Numero total de lineas en el archivo fuente
 
 //Variables globales para analizador sintáctico
-int numAtomos;
+int numAtomos, numAtomOpRel, numAtomPalRes;
 char* cadenaAtomos = "";
 
 %}
@@ -65,10 +67,14 @@ error       [^ \t(\r)(\n)(\r\n)]
                 printf("\n\t0\t%d", valor);
                 printf("\n\t-----------------");
                 fprintf(archSal, "0,%d\n", valor);
+
+                //ETAPA DE ANALISIS SINTACTICO:
+                agregarAtomo(atomosPalabrasReservadas[valor]);
             }else{
                 //Si no se guarda como error
                 guardarError(yytext);
             }
+
             }
 
 {ident}     {
@@ -104,6 +110,9 @@ error       [^ \t(\r)(\n)(\r\n)]
             fprintf(archSal, "2,%s\n", yytext);
             printf("\n\t2\t%s", yytext);
             printf("\n\t-----------------");
+
+            //ETAPA DE ANALISIS SINTACTICO:
+            agregarAtomo(yytext);
             }
 
 {asig}      {
@@ -113,6 +122,9 @@ error       [^ \t(\r)(\n)(\r\n)]
             fprintf(archSal, "3,%s\n", yytext);
             printf("\n\t3\t=");
             printf("\n\t-----------------");
+
+            //ETAPA DE ANALISIS SINTACTICO:
+            agregarAtomo("=");
             }
 
 {relac}     {
@@ -126,10 +138,15 @@ error       [^ \t(\r)(\n)(\r\n)]
                 fprintf(archSal, "4,%d\n", valor);
                 printf("\n\t4\t%d", valor);
                 printf("\n\t-----------------");
+
+                //ETAPA DE ANALISIS SINTACTICO:
+                agregarAtomo(atomosOperadoresRelacionales[valor]);
             }else{
                 //Si no se encontro se guarda como error
                 guardarError(yytext);
             }
+
+
             }
 
 {opArit}    {
@@ -139,6 +156,9 @@ error       [^ \t(\r)(\n)(\r\n)]
             fprintf(archSal, "5,%s\n", yytext);
             printf("\n\t5\t%s", yytext);
             printf("\n\t-----------------");
+
+            //ETAPA DE ANALISIS SINTACTICO:
+            agregarAtomo(yytext);
             }
 
 {cadena}    {
@@ -161,6 +181,9 @@ error       [^ \t(\r)(\n)(\r\n)]
             fprintf(archSal, "6,%d\n", valor);
             printf("\n\t6\t%d", valor);
             printf("\n\t-----------------");
+
+            //ETAPA DE ANALISIS SINTACTICO:
+            agregarAtomo("s");
             }
 
 {enteros}   {
@@ -181,6 +204,9 @@ error       [^ \t(\r)(\n)(\r\n)]
             fprintf(archSal, "7,%d\n", valor);
             printf("\n\t7\t%d", valor);
             printf("\n\t-----------------");
+
+            //ETAPA DE ANALISIS SINTACTICO:
+            agregarAtomo("n");
             }
 
 {reales}    {
@@ -201,6 +227,9 @@ error       [^ \t(\r)(\n)(\r\n)]
             fprintf(archSal, "8,%d\n", valor);
             printf("\n\t8\t%d", valor);
             printf("\n\t-----------------");
+
+            //ETAPA DE ANALISIS SINTACTICO:
+            agregarAtomo("r");
             }
 
 {comment}   {
@@ -332,8 +361,13 @@ void printTabla(char *titulo, char **tabla, int numElementos){
 void analisis(char *argv[]){
     //Llenamos nuestro arreglo de palabras reservadas desde archivo
     palabrasReservadas = populateArray("palabrasReservadas.txt", &numPalRes);
+    //Llenamos nuestro arreglo de atomos de palabras reservadas
+    atomosPalabrasReservadas = populateArray("atomosPalabrasReservadas.txt", &numAtomPalRes);
+
      //Llenamos nuestro arreglo de palabras reservadas desde archivo
     operadoresRelacionales = populateArray("opRelacional.txt", &numOpRel);
+    //Lenamos nuestros arreglo de atomos de operadores relacionales
+    atomosOperadoresRelacionales = populateArray("atomosOpRelacional.txt", &numAtomOpRel);
 
     //Formato:
     printf("----------------------------------------------------\n");
@@ -364,6 +398,8 @@ void analisis(char *argv[]){
 
     //Prubas analisis SINTACTICO
     // printf("Numero de identificadores: %d", numIdentficiadores);
+        // printTabla("Tabla de atomos op relacional", atomosOperadoresRelacionales, numAtomOpRel);
+
     printf("\nNumero de atomos: %d", numAtomos);
     printf("\n%s\n\n", cadenaAtomos);
 
