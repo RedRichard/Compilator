@@ -492,8 +492,8 @@ int yy_flex_debug = 0;
 #define YY_MORE_ADJ 0
 #define YY_RESTORE_YY_MORE_OFFSET
 char *yytext;
-#line 1 "analizadorLexicoHGR.l"
-#line 2 "analizadorLexicoHGR.l"
+#line 1 "analizador.l"
+#line 2 "analizador.l"
 /*
     Programa 1: Analizador Léxico
     Elaboró: Hernández Gómez Ricardo
@@ -742,7 +742,7 @@ YY_DECL
 		}
 
 	{
-#line 49 "analizadorLexicoHGR.l"
+#line 49 "analizador.l"
 
 #line 748 "lex.yy.c"
 
@@ -803,7 +803,7 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 50 "analizadorLexicoHGR.l"
+#line 50 "analizador.l"
 {
             // printf("Palabra reservada: %s de longitud %lu\n", yytext, yyleng);
             
@@ -822,7 +822,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 66 "analizadorLexicoHGR.l"
+#line 66 "analizador.l"
 {
             // printf("Identificador: %s\n", yytext);
             
@@ -848,7 +848,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 89 "analizadorLexicoHGR.l"
+#line 89 "analizador.l"
 {
             // printf("Simbolo especial: %s\n", yytext);
 
@@ -860,7 +860,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 98 "analizadorLexicoHGR.l"
+#line 98 "analizador.l"
 {
             // printf("Operador asignacion: %s\n", yytext);
 
@@ -872,7 +872,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 107 "analizadorLexicoHGR.l"
+#line 107 "analizador.l"
 {
             // printf("Operador relacional: %s de longitud %lu\n", yytext, yyleng);
 
@@ -892,7 +892,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 124 "analizadorLexicoHGR.l"
+#line 124 "analizador.l"
 {
             // printf("Operador aritmetico: %s\n", yytext);
 
@@ -904,7 +904,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 133 "analizadorLexicoHGR.l"
+#line 133 "analizador.l"
 {
             // printf("Cadena: %s\n", yytext);
 
@@ -929,7 +929,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 155 "analizadorLexicoHGR.l"
+#line 155 "analizador.l"
 {
             // printf("Entero: %s\n", yytext);
 
@@ -952,7 +952,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 175 "analizadorLexicoHGR.l"
+#line 175 "analizador.l"
 {
             // printf("Real: %s\n", yytext);
 
@@ -975,7 +975,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 195 "analizadorLexicoHGR.l"
+#line 195 "analizador.l"
 {
             // printf("\n\t\tComentario: %s\n", yytext);
             }
@@ -983,21 +983,21 @@ YY_RULE_SETUP
 case 11:
 /* rule 11 can match eol */
 YY_RULE_SETUP
-#line 199 "analizadorLexicoHGR.l"
+#line 199 "analizador.l"
 {
             lineCount++;        //Contador de lineas
             }
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 203 "analizadorLexicoHGR.l"
+#line 203 "analizador.l"
 {
             guardarError(yytext);       //Detectado un error, se guarda
             }
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 207 "analizadorLexicoHGR.l"
+#line 207 "analizador.l"
 ECHO;
 	YY_BREAK
 #line 1004 "lex.yy.c"
@@ -2005,7 +2005,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 207 "analizadorLexicoHGR.l"
+#line 207 "analizador.l"
 
 
 //Busqueda lineal en cada arreglo de componentes lexicos:
