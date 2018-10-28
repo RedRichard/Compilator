@@ -15,6 +15,10 @@ char** inicializarArray();
 int busquedaLineal(char **tabla, char *objetivo, int tamanio);
 void guardarError(char *error);
 
+char* inicializarString();
+char* agregarChar(char *cadena, char *caracter);
+void agregarAtomo(char *caracter);
+
 //Declaraciones de variables globales para su uso a lo largo del programa:
 FILE *archSal;          //Archivo de salida
 //Arreglos de cadenas para el almacenamiento de cada tipo de componente lexico:
@@ -28,6 +32,10 @@ char** errores;
 //Contadores de numero de elementos en cada arreglo de cadenas:
 int numPalRes, numOpRel, numIdentficiadores, numConsCadena, numConsNum, numConsReal, numErrores;
 int lineCount = 1;          //Numero total de lineas en el archivo fuente
+
+//Variables globales para analizador sintáctico
+int numAtomos;
+char* cadenaAtomos = "";
 
 %}
 
@@ -66,6 +74,7 @@ error       [^ \t(\r)(\n)(\r\n)]
 {ident}     {
             // printf("Identificador: %s\n", yytext);
             
+            //ETAPA DE ANALISIS LEXICO:
             //Se realiza una busqueda del identificador para confirmar que no se ha agregado aun:
             int valor = busquedaLineal(identificadores, yytext, numIdentficiadores);
             
@@ -83,7 +92,9 @@ error       [^ \t(\r)(\n)(\r\n)]
             fprintf(archSal, "1,%d\n", valor);
             printf("\n\t1\t%d", valor);
             printf("\n\t-----------------");
-            
+        
+            //ETAPA DE ANALISIS SINTACTICO:
+            agregarAtomo("a");
             }
 
 {simEsp}    {
@@ -205,6 +216,28 @@ error       [^ \t(\r)(\n)(\r\n)]
             }
 
 %%
+
+//Iniciar string:
+char* inicializarString(){
+    char *auxPointer = (char *) malloc(1 * sizeof(char));
+    return auxPointer;
+}
+
+char* agregarChar(char *cadena, char *caracter){
+    char *resultado = malloc(strlen(cadena) + strlen(caracter) + 1);
+    strcpy(resultado, cadena);
+    strcat(resultado, caracter);
+    return resultado;
+}
+
+//Funcion para agregar un atomo a la cadena de atomos.
+void agregarAtomo(char *caracter){
+    if(!cadenaAtomos){
+        cadenaAtomos = inicializarString();
+    }
+    cadenaAtomos = agregarChar(cadenaAtomos, caracter);
+    numAtomos++;
+}
 
 //Busqueda lineal en cada arreglo de componentes lexicos:
 int busquedaLineal(char **tabla, char *objetivo, int tamanio){
@@ -328,6 +361,11 @@ void analisis(char *argv[]){
     generarArchivo("Errores.txt", errores, numErrores);
 
     printf("\n");
+
+    //Prubas analisis SINTACTICO
+    // printf("Numero de identificadores: %d", numIdentficiadores);
+    printf("\nNumero de atomos: %d", numAtomos);
+    printf("\n%s\n\n", cadenaAtomos);
 
 }
 
