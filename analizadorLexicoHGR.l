@@ -296,7 +296,7 @@ void printTabla(char *titulo, char **tabla, int numElementos){
 }
 
 //Funcion que almacena cada etapa del analisis:
-void analisisLexico(char *argv[]){
+void analisis(char *argv[]){
     //Llenamos nuestro arreglo de palabras reservadas desde archivo
     palabrasReservadas = populateArray("palabrasReservadas.txt", &numPalRes);
      //Llenamos nuestro arreglo de palabras reservadas desde archivo
@@ -334,6 +334,6 @@ void analisisLexico(char *argv[]){
 //Funcion main para realizar la ejecucion:
 int main(int argc, char*argv[])
 {
-    analisisLexico(argv);
+    analisis(argv);
     return 0;
 }
