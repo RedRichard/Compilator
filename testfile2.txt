@@ -1,0 +1,14 @@
+$$ Este es un comentario
+
+[
+    Entero variable;
+    Cadena str;
+    variable := 5;
+    
+    Si(c .DIF. 5)[
+        str := "holi";
+    ]
+]
+    
+
+$$ Otro comentario

@@ -1,11 +1,4 @@
 Posicion	Nombre		Tipo
-0			funcionU	
-1			variable	
-2			lll	
-3			este	
-4			num	
-5			re	
-6			imprimir	
-7			invertir	
-8			c	
-9			escanea	
+0			variable	
+1			str	
+2			c	

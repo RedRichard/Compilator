@@ -10,6 +10,9 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+char* cadenaAtomos = "";
+#include "sintactica.c"
+
 //Prototipo de funciones utilizadas en el analisis previo a su declaracion:
 char** inicializarArray();          
 int busquedaLineal(char **tabla, char *objetivo, int tamanio);
@@ -37,7 +40,6 @@ int lineCount = 1;          //Numero total de lineas en el archivo fuente
 
 //Variables globales para analizador sintáctico
 int numAtomos, numAtomOpRel, numAtomPalRes;
-char* cadenaAtomos = "";
 
 %}
 
@@ -246,6 +248,8 @@ error       [^ \t(\r)(\n)(\r\n)]
 
 %%
 
+//ANALISIS LEXICO:
+
 //Iniciar string:
 char* inicializarString(){
     char *auxPointer = (char *) malloc(1 * sizeof(char));
@@ -402,6 +406,13 @@ void analisis(char *argv[]){
 
     printf("\nNumero de atomos: %d", numAtomos);
     printf("\n%s\n\n", cadenaAtomos);
+
+    //ANALISIS SINTACTICO:
+    do{
+        if(anSintactico() == 1){
+            printf("\nEs sintacticamente correcto.\n");
+        }
+    }while(c != '\0');
 
 }
 

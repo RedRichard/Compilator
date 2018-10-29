@@ -505,6 +505,9 @@ char *yytext;
 #include <stdlib.h>
 #include <stdio.h>
 
+char* cadenaAtomos = "";
+#include "sintactica.c"
+
 //Prototipo de funciones utilizadas en el analisis previo a su declaracion:
 char** inicializarArray();          
 int busquedaLineal(char **tabla, char *objetivo, int tamanio);
@@ -532,10 +535,9 @@ int lineCount = 1;          //Numero total de lineas en el archivo fuente
 
 //Variables globales para analizador sintáctico
 int numAtomos, numAtomOpRel, numAtomPalRes;
-char* cadenaAtomos = "";
 
-#line 538 "lex.yy.c"
-#line 539 "lex.yy.c"
+#line 540 "lex.yy.c"
+#line 541 "lex.yy.c"
 
 #define INITIAL 0
 
@@ -752,9 +754,9 @@ YY_DECL
 		}
 
 	{
-#line 59 "analizador.l"
+#line 61 "analizador.l"
 
-#line 758 "lex.yy.c"
+#line 760 "lex.yy.c"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -813,7 +815,7 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 60 "analizador.l"
+#line 62 "analizador.l"
 {
             // printf("Palabra reservada: %s de longitud %lu\n", yytext, yyleng);
             
@@ -836,7 +838,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 80 "analizador.l"
+#line 82 "analizador.l"
 {
             // printf("Identificador: %s\n", yytext);
             
@@ -865,7 +867,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 106 "analizador.l"
+#line 108 "analizador.l"
 {
             // printf("Simbolo especial: %s\n", yytext);
 
@@ -880,7 +882,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 118 "analizador.l"
+#line 120 "analizador.l"
 {
             // printf("Operador asignacion: %s\n", yytext);
 
@@ -895,7 +897,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 130 "analizador.l"
+#line 132 "analizador.l"
 {
             // printf("Operador relacional: %s de longitud %lu\n", yytext, yyleng);
 
@@ -920,7 +922,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 152 "analizador.l"
+#line 154 "analizador.l"
 {
             // printf("Operador aritmetico: %s\n", yytext);
 
@@ -935,7 +937,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 164 "analizador.l"
+#line 166 "analizador.l"
 {
             // printf("Cadena: %s\n", yytext);
 
@@ -963,7 +965,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 189 "analizador.l"
+#line 191 "analizador.l"
 {
             // printf("Entero: %s\n", yytext);
 
@@ -989,7 +991,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 212 "analizador.l"
+#line 214 "analizador.l"
 {
             // printf("Real: %s\n", yytext);
 
@@ -1015,7 +1017,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 235 "analizador.l"
+#line 237 "analizador.l"
 {
             // printf("\n\t\tComentario: %s\n", yytext);
             }
@@ -1023,24 +1025,24 @@ YY_RULE_SETUP
 case 11:
 /* rule 11 can match eol */
 YY_RULE_SETUP
-#line 239 "analizador.l"
+#line 241 "analizador.l"
 {
             lineCount++;        //Contador de lineas
             }
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 243 "analizador.l"
+#line 245 "analizador.l"
 {
             guardarError(yytext);       //Detectado un error, se guarda
             }
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 247 "analizador.l"
+#line 249 "analizador.l"
 ECHO;
 	YY_BREAK
-#line 1044 "lex.yy.c"
+#line 1046 "lex.yy.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -2045,8 +2047,10 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 247 "analizador.l"
+#line 249 "analizador.l"
 
+
+//ANALISIS LEXICO:
 
 //Iniciar string:
 char* inicializarString(){
@@ -2204,6 +2208,13 @@ void analisis(char *argv[]){
 
     printf("\nNumero de atomos: %d", numAtomos);
     printf("\n%s\n\n", cadenaAtomos);
+
+    //ANALISIS SINTACTICO:
+    do{
+        if(anSintactico() == 1){
+            printf("\nEs sintacticamente correcto.\n");
+        }
+    }while(c != '\0');
 
 }
 
