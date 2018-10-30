@@ -29,19 +29,20 @@ char c;
 int atomIndex = 0;
 int numErrSintacticos = 0;
 
+//Funcion que regresa el siguiente atomo de la cadena de atomos:
 char getNextAtomo(){
-    // printf("\n%c\n", cadenaAtomos[atomIndex]);
     return cadenaAtomos[atomIndex++];
 }
 
+//Funcion que regresa un mensaje de error indicando el atomo y ubicacion en la cadena de atomos:
 void error(){
     printf("\nHay un error en el atomo %d: %c\n\n", atomIndex, c);
     numErrSintacticos++;
 }
 
+//Funcion con las instrucciones para realizar el analisis sintactico:
 int anSintactico(){
     c = getNextAtomo();
-    // printf("\nchar actual: %c\n", c);
     G();
     if(numErrSintacticos == 0){
         printf("Fin");
@@ -52,14 +53,13 @@ int anSintactico(){
     }
 }
 
+//Produccion G:
 void G(){
     if(c == '['){
-        c = getNextAtomo();
-        // printf("\nchar actual: %c\n", c);
+        c = getNextAtomo();    
         Z();
         if(c == ']'){
-            c = getNextAtomo();
-            // printf("\nchar actual: %c\n", c);
+            c = getNextAtomo();        
         }
         else{
             error();
@@ -70,6 +70,7 @@ void G(){
     }
 }
 
+//Produccion Z:
 void Z(){
     if(c == 'b' || c == 'c' || c == 'e' || c == 'd'){
         D();
@@ -86,6 +87,7 @@ void Z(){
     }
 }
 
+//Produccion Y:
 void Y(){
     if(c == 'a' || c == 'h' || c == 'm' || c == 'p' || c == 'i'){
         S();
@@ -96,6 +98,7 @@ void Y(){
     }
 }
 
+//Produccion X:
 void X(){
     if(c == 'a' || c == 'h' || c == 'm' || c == 'p' || c == 'i'){
         Y();
@@ -108,12 +111,12 @@ void X(){
     }
 }
 
+//Produccion D:
 void D(){
     if(c == 'b' || c == 'c' || c == 'e' || c == 'd'){
         J();
         if(c == 'a'){
-            c = getNextAtomo();
-            // printf("\nchar actual: %c\n", c);
+            c = getNextAtomo();        
         }
         else{
             error();
@@ -125,35 +128,31 @@ void D(){
     }
 }
 
+//Produccion J:
 void J(){
     if(c == 'b'){
-        c = getNextAtomo();
-        // printf("\nchar actual: %c\n", c);
+        c = getNextAtomo();    
     }
     else if(c == 'c'){
-        c = getNextAtomo();
-        // printf("\nchar actual: %c\n", c);
+        c = getNextAtomo();    
     }
     else if(c == 'e'){
-        c = getNextAtomo();
-        // printf("\nchar actual: %c\n", c);
+        c = getNextAtomo();    
     }
     else if(c == 'd'){
-        c = getNextAtomo();
-        // printf("\nchar actual: %c\n", c);
+        c = getNextAtomo();    
     }
     else{
         error();
     }
 }
 
+//Produccion V:
 void V(){
     if(c == ','){
-        c = getNextAtomo();
-        // printf("\nchar actual: %c\n", c);
+        c = getNextAtomo();    
         if(c == 'a'){
-            c = getNextAtomo();
-            // printf("\nchar actual: %c\n", c);
+            c = getNextAtomo();        
         }
         else{
             error();
@@ -161,20 +160,19 @@ void V(){
         V();
     }
     else if(c == ';'){
-        c = getNextAtomo();
-        // printf("\nchar actual: %c\n", c);
+        c = getNextAtomo();    
     }
     else{
         error();
     }
 }
 
+//Produccion S:
 void S(){
     if(c == 'a'){
         A();
         if(c == ';'){
-            c = getNextAtomo();
-            // printf("\nchar actual: %c\n", c);
+            c = getNextAtomo();        
         }
         else{
             error();
@@ -197,13 +195,12 @@ void S(){
     }
 }
 
+//Produccion A:
 void A(){
     if(c == 'a'){
-        c = getNextAtomo();
-        // printf("\nchar actual: %c\n", c);
+        c = getNextAtomo();    
         if(c == '='){
-            c = getNextAtomo();
-            // printf("\nchar actual: %c\n", c);
+            c = getNextAtomo();        
         }
         else{
             error();
@@ -215,50 +212,44 @@ void A(){
     }
 }
 
+//Produccion H:
 void H(){
     if(c == 'h'){
-        c = getNextAtomo();
-        // printf("\nchar actual: %c\n", c);
+        c = getNextAtomo();    
         if(c == '['){
-            c = getNextAtomo();
-            // printf("\nchar actual: %c\n", c);
+            c = getNextAtomo();        
         }
         else{
             error();
         }
         Y();
         if(c == ']'){
-            c = getNextAtomo();
-            // printf("\nchar actual: %c\n", c);
+            c = getNextAtomo();        
         }
         else{
             error();
         }
         if(c == 'm'){
-            c = getNextAtomo();
-            // printf("\nchar actual: %c\n", c);
+            c = getNextAtomo();        
         }
         else{
             error();
         }
         if(c == '('){
-            c = getNextAtomo();
-            // printf("\nchar actual: %c\n", c);
+            c = getNextAtomo();        
         }
         else{
             error();
         }
         R();
         if(c == ')'){
-            c = getNextAtomo();
-            // printf("\nchar actual: %c\n", c);
+            c = getNextAtomo();        
         }
         else{
             error();
         }
         if(c == ';'){
-            c = getNextAtomo();
-            // printf("\nchar actual: %c\n", c);
+            c = getNextAtomo();        
         }
         else{
             error();
@@ -269,36 +260,32 @@ void H(){
     }
 }
 
+//Produccion M:
 void M(){
     if(c == 'm'){
-        c = getNextAtomo();
-        // printf("\nchar actual: %c\n", c);
+        c = getNextAtomo();    
         if(c == '('){
-            c = getNextAtomo();
-            // printf("\nchar actual: %c\n", c);
+            c = getNextAtomo();        
         }
         else{
             error();
         }
         R();
         if(c == ')'){
-            c = getNextAtomo();
-            // printf("\nchar actual: %c\n", c);
+            c = getNextAtomo();        
         }
         else{
             error();
         }
         if(c == '['){
-            c = getNextAtomo();
-            // printf("\nchar actual: %c\n", c);
+            c = getNextAtomo();        
         }
         else{
             error();
         }
         Y();
         if(c == ']'){
-            c = getNextAtomo();
-            // printf("\nchar actual: %c\n", c);
+            c = getNextAtomo();        
         }
         else{
             error();
@@ -309,52 +296,46 @@ void M(){
     }
 }
 
+//Produccion P:
 void P(){
     if(c == 'p'){
-        c = getNextAtomo();
-        // printf("\nchar actual: %c\n", c);
+        c = getNextAtomo();    
         if(c == '('){
-            c = getNextAtomo();
-            // printf("\nchar actual: %c\n", c);
+            c = getNextAtomo();        
         }
         else{
             error();
         }
         A();
         if(c == ';'){
-            c = getNextAtomo();
-            // printf("\nchar actual: %c\n", c);
+            c = getNextAtomo();        
         }
         else{
             error();
         }
         R();
         if(c == ';'){
-            c = getNextAtomo();
-            // printf("\nchar actual: %c\n", c);
+            c = getNextAtomo();        
         }
         else{
             error();
         }
         A();
         if(c == ')'){
-            c = getNextAtomo();
-            // printf("\nchar actual: %c\n", c);
+            c = getNextAtomo();        
         }
         else{
             error();
         }
         if(c == '['){
-            c = getNextAtomo();
-            // printf("\nchar actual: %c\n", c);
+            c = getNextAtomo();        
         }
         else{
             error();
         }
         Y();
         if(c == ']'){
-            c = getNextAtomo();
-            // printf("\nchar actual: %c\n", c);
+            c = getNextAtomo();        
         }
         else{
             error();
@@ -365,36 +346,32 @@ void P(){
     }
 }
 
+//Produccion I:
 void I(){
     if(c == 'i'){
-        c = getNextAtomo();
-        // printf("\nchar actual: %c\n", c);
+        c = getNextAtomo();    
         if(c == '('){
-            c = getNextAtomo();
-            // printf("\nchar actual: %c\n", c);
+            c = getNextAtomo();        
         }
         else{
             error();
         }
         R();
         if(c == ')'){
-            c = getNextAtomo();
-            // printf("\nchar actual: %c\n", c);
+            c = getNextAtomo();        
         }
         else{
             error();
         }
         if(c == '['){
-            c = getNextAtomo();
-            // printf("\nchar actual: %c\n", c);
+            c = getNextAtomo();        
         }
         else{
             error();
         }
         Y();
         if(c == ']'){
-            c = getNextAtomo();
-            // printf("\nchar actual: %c\n", c);
+            c = getNextAtomo();        
         }
         else{
             error();
@@ -406,24 +383,22 @@ void I(){
     }
 }
 
+//Produccion N:
 void N(){
     if(c == 'a' || c == 'h' || c == 'm' || c == 'p' || c == 'i' || c == ']' || c == 0){
         return;
     }
     else if(c == 'o'){
-        c = getNextAtomo();
-        // printf("\nchar actual: %c\n", c);
+        c = getNextAtomo();    
         if(c == '['){
-            c = getNextAtomo();
-            // printf("\nchar actual: %c\n", c);
+            c = getNextAtomo();        
         }
         else{
             error();
         }
         Y();
         if(c == ']'){
-            c = getNextAtomo();
-            // printf("\nchar actual: %c\n", c);
+            c = getNextAtomo();        
         }
         else{
             error();
@@ -434,21 +409,19 @@ void N(){
     }
 }
 
+//Produccion K:
 void K(){
     if(c == 's'){
-        c = getNextAtomo();
-        // printf("\nchar actual: %c\n", c);
+        c = getNextAtomo();    
     }
     else if(c == '(' || c == 'a' || c == 'n' || c == 'r'){
         E();
     }
     else if(c == 't'){
-        c = getNextAtomo();
-        // printf("\nchar actual: %c\n", c);
+        c = getNextAtomo();    
     }
     else if(c == 'f'){
-        c = getNextAtomo();
-        // printf("\nchar actual: %c\n", c);
+        c = getNextAtomo();    
     }
     else{
         error();
@@ -465,6 +438,7 @@ void R(){
     }
 }
 
+//Produccion Q:
 void Q(){
     if(c == '>' || c == '<' || c == 'q' || c == 'l' || c == 'g' || c == '!'){
         O();
@@ -478,36 +452,32 @@ void Q(){
     }
 }
 
+//Produccion O:
 void O(){
     if(c == '!'){
-        c = getNextAtomo();
-        // printf("\nchar actual: %c\n", c);
+        c = getNextAtomo();    
     }
     else if(c == 'q'){
-        c = getNextAtomo();
-        // printf("\nchar actual: %c\n", c);
+        c = getNextAtomo();    
     }
     else if(c == '<'){
-        c = getNextAtomo();
-        // printf("\nchar actual: %c\n", c);
+        c = getNextAtomo();    
     }
     else if(c == 'l'){
-        c = getNextAtomo();
-        // printf("\nchar actual: %c\n", c);
+        c = getNextAtomo();    
     }
     else if(c == '>'){
-        c = getNextAtomo();
-        // printf("\nchar actual: %c\n", c);
+        c = getNextAtomo();    
     }
     else if(c == 'g'){
-        c = getNextAtomo();
-        // printf("\nchar actual: %c\n", c);
+        c = getNextAtomo();    
     }
     else{
         error();
     }
 }
 
+//Produccion E:
 void E(){
     if(c == '(' || c == 'a' || c == 'n' || c == 'r'){
         T();
@@ -518,16 +488,15 @@ void E(){
     }
 }
 
+//Produccion EP:
 void EP(){
     if(c == '+'){
-        c = getNextAtomo();
-        // printf("\nchar actual: %c\n", c);
+        c = getNextAtomo();    
         T();
         EP();
     }
     else if(c == '-'){
-        c = getNextAtomo();
-        // printf("\nchar actual: %c\n", c);
+        c = getNextAtomo();    
         T();
         EP();
     }
@@ -539,6 +508,7 @@ void EP(){
     }
 }
 
+//Produccion T:
 void T(){
     if(c == '(' || c == 'a' || c == 'n' || c == 'r'){
         F();
@@ -549,22 +519,20 @@ void T(){
     }
 }
 
+//Produccion TP:
 void TP(){
     if(c == '*'){
-        c = getNextAtomo();
-        // printf("\nchar actual: %c\n", c);
+        c = getNextAtomo();    
         F();
         TP();
     }
     else if(c == '/'){
-        c = getNextAtomo();
-        // printf("\nchar actual: %c\n", c);
+        c = getNextAtomo();    
         F();
         TP();
     }
     else if(c == '%'){
-        c = getNextAtomo();
-        // printf("\nchar actual: %c\n", c);
+        c = getNextAtomo();    
         F();
         TP();
     }
@@ -576,30 +544,26 @@ void TP(){
     }
 }
 
+//Produccion F:
 void F(){
     if(c == '('){
-        c = getNextAtomo();
-        // printf("\nchar actual: %c\n", c);
+        c = getNextAtomo();    
         E();
         if(c == ')'){
-            c = getNextAtomo();
-            // printf("\nchar actual: %c\n", c);
+            c = getNextAtomo();        
         }
         else{
             error();
         }
     }
     else if(c == 'a'){
-        c = getNextAtomo();
-        // printf("\nchar actual: %c\n", c);
+        c = getNextAtomo();    
     }
     else if(c == 'n'){
-        c = getNextAtomo();
-        // printf("\nchar actual: %c\n", c);
+        c = getNextAtomo();    
     }
     else if(c == 'r'){
-        c = getNextAtomo();
-        // printf("\nchar actual: %c\n", c);
+        c = getNextAtomo();    
     }
     else{
         error();
