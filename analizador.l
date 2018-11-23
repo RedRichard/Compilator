@@ -1,6 +1,5 @@
 %{
 /*
-    Programa 2: Analizador Lexico-Sintactico
     Elaboro: Hernandez Gomez Ricardo
     Fecha: 30/10/2018
     Compiladores
