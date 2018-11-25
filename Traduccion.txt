@@ -1,0 +1,1 @@
+[ Entero vari , var ; Cadena str ; vari := 6 ; Si ( vari <= 5 ) [ str := "holi" ; ] ] 
