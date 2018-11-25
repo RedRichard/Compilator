@@ -16,7 +16,7 @@ void guardarError(char *error);
 
 char* inicializarString();
 char* agregarChar(char *cadena, char *caracter);
-void agregarAtomo(char *caracter);
+void agregarAtomo(char *caracter, char *valor);
 
 //Declaraciones de variables globales para su uso a lo largo del programa:
 FILE *archSal;          //Archivo de salida
@@ -24,6 +24,7 @@ FILE *archSal;          //Archivo de salida
 char** palabrasReservadas;
 char** atomosPalabrasReservadas;
 char** identificadores;
+char*  valoresIdentificadores;
 char** operadoresRelacionales;
 char** atomosOperadoresRelacionales;
 char** constantesCadena;
@@ -31,14 +32,18 @@ char** constantesNumerica;
 char** constantesReal;
 char** errores;
 //Contadores de numero de elementos en cada arreglo de cadenas:
-int numPalRes, numOpRel, numIdentficiadores, numConsCadena, numConsNum, numConsReal, numErrores;
+
+int numPalRes, numOpRel, numIdentificadores, numConsCadena, numConsNum, numConsReal, numErrores;
 int lineCount = 1;          //Numero total de lineas en el archivo fuente
 
 //Variables globales para analizador sintáctico
 int numAtomos, numAtomOpRel, numAtomPalRes;
 int atomIndex = 0;
+int atomValueIndex = 0;
 int numErrSintacticos = 0;
-char* cadenaAtomos = "";
+char *cadenaAtomos = "";
+char *cadenaAtomosValores = "";
+char atr;
 char c;
 
 //Prototipos de funciones utilizadas en el análisis sintáctico:
@@ -47,8 +52,8 @@ void Z();
 void Y();
 void X();
 void D();
-void J();
-void V();
+char J();
+void V(char t);
 void S();
 void A();
 void H();
@@ -65,6 +70,12 @@ void EP();
 void T();
 void TP();
 void F();
+
+int numValoresIdentificadores = 0;
+//Prototipos de funciones para analizados semantico:
+char getValorToken();
+void asignaTipo(char t, char p);
+char* getTipoIdent(char val);
 
 %}
 
@@ -95,8 +106,12 @@ error       [^ \t(\r)(\n)(\r\n)]
                 printf("\n\t-----------------");
                 fprintf(archSal, "0,%d\n", valor);
 
+                //Convertimos nuestro valor en una cadena para facilitar su uso:
+                char auxCadena[12];
+                sprintf(auxCadena, "%d", valor);
+
                 //ETAPA DE ANALISIS SINTACTICO:
-                agregarAtomo(atomosPalabrasReservadas[valor]);
+                agregarAtomo(atomosPalabrasReservadas[valor], auxCadena);
             }else{
                 //Si no se guarda como error
                 guardarError(yytext);
@@ -109,25 +124,30 @@ error       [^ \t(\r)(\n)(\r\n)]
             
             //ETAPA DE ANALISIS LEXICO:
             //Se realiza una busqueda del identificador para confirmar que no se ha agregado aun:
-            int valor = busquedaLineal(identificadores, yytext, numIdentficiadores);
+            int valor = busquedaLineal(identificadores, yytext, numIdentificadores);
             
             //Si la longitud es menor a 8 se guarda en la tabla de identificadores
             if(valor == -1){
                 if(!identificadores){
                     identificadores = inicializarArray();   //Se inicializa el arreglo
                 }
-                identificadores[numIdentficiadores] = malloc(yyleng*sizeof(char*)); //Asignamos espacio para cada linea
-                strcpy(identificadores[numIdentficiadores++], yytext); //Copiamos la linea en el arreglo
-                identificadores = realloc(identificadores, (numIdentficiadores+2)*sizeof(char**)); //Agregamos un espacio para otra linea
-                valor = numIdentficiadores-1;
+                // Se reserva espacio en la tabla que almacena los nombres de los identificadores
+                identificadores[numIdentificadores] = malloc(yyleng*sizeof(char*)); //Asignamos espacio para cada linea
+                strcpy(identificadores[numIdentificadores++], yytext); //Copiamos la linea en el arreglo
+                identificadores = realloc(identificadores, (numIdentificadores+2)*sizeof(char**)); //Agregamos un espacio para otra linea
+                valor = numIdentificadores-1;
             }
             //Guardamos el token
             fprintf(archSal, "1,%d\n", valor);
             printf("\n\t1\t%d", valor);
             printf("\n\t-----------------");
+
+            //Convertimos nuestro valor en una cadena para facilitar su uso:
+            char auxCadena[12];
+            sprintf(auxCadena, "%d", valor);
         
             //ETAPA DE ANALISIS SINTACTICO:
-            agregarAtomo("a");
+            agregarAtomo("a", auxCadena);
             }
 
 {simEsp}    {
@@ -139,19 +159,19 @@ error       [^ \t(\r)(\n)(\r\n)]
             printf("\n\t-----------------");
 
             //ETAPA DE ANALISIS SINTACTICO:
-            agregarAtomo(yytext);
+            agregarAtomo(yytext, yytext);
             }
 
 {asig}      {
             // printf("Operador asignacion: %s\n", yytext);
 
             //Identificado el operador de asignacion ':=', este se guarda como token con valor '=':
-            fprintf(archSal, "3,%s\n", yytext);
+            fprintf(archSal, "3,=\n");
             printf("\n\t3\t=");
             printf("\n\t-----------------");
 
             //ETAPA DE ANALISIS SINTACTICO:
-            agregarAtomo("=");
+            agregarAtomo("=", "=");
             }
 
 {relac}     {
@@ -167,7 +187,7 @@ error       [^ \t(\r)(\n)(\r\n)]
                 printf("\n\t-----------------");
 
                 //ETAPA DE ANALISIS SINTACTICO:
-                agregarAtomo(atomosOperadoresRelacionales[valor]);
+                agregarAtomo(atomosOperadoresRelacionales[valor], atomosOperadoresRelacionales[valor]);
             }else{
                 //Si no se encontro se guarda como error
                 guardarError(yytext);
@@ -185,7 +205,7 @@ error       [^ \t(\r)(\n)(\r\n)]
             printf("\n\t-----------------");
 
             //ETAPA DE ANALISIS SINTACTICO:
-            agregarAtomo(yytext);
+            agregarAtomo(yytext, yytext);
             }
 
 {cadena}    {
@@ -209,8 +229,12 @@ error       [^ \t(\r)(\n)(\r\n)]
             printf("\n\t6\t%d", valor);
             printf("\n\t-----------------");
 
+            //Convertimos nuestro valor en una cadena para facilitar su uso:
+            char auxCadena[12];
+            sprintf(auxCadena, "%d", valor);
+
             //ETAPA DE ANALISIS SINTACTICO:
-            agregarAtomo("s");
+            agregarAtomo("s", auxCadena);
             }
 
 {enteros}   {
@@ -232,8 +256,12 @@ error       [^ \t(\r)(\n)(\r\n)]
             printf("\n\t7\t%d", valor);
             printf("\n\t-----------------");
 
+            //Convertimos nuestro valor en una cadena para facilitar su uso:
+            char auxCadena[12];
+            sprintf(auxCadena, "%d", valor);
+
             //ETAPA DE ANALISIS SINTACTICO:
-            agregarAtomo("n");
+            agregarAtomo("n", auxCadena);
             }
 
 {reales}    {
@@ -255,8 +283,12 @@ error       [^ \t(\r)(\n)(\r\n)]
             printf("\n\t8\t%d", valor);
             printf("\n\t-----------------");
 
+            //Convertimos nuestro valor en una cadena para facilitar su uso:
+            char auxCadena[12];
+            sprintf(auxCadena, "%d", valor);
+
             //ETAPA DE ANALISIS SINTACTICO:
-            agregarAtomo("r");
+            agregarAtomo("r", auxCadena);
             }
 
 {comment}   {
@@ -289,11 +321,15 @@ char* agregarChar(char *cadena, char *caracter){
 }
 
 //Funcion para agregar un atomo a la cadena de atomos.
-void agregarAtomo(char *caracter){
+void agregarAtomo(char *caracter, char *valor){
     if(!cadenaAtomos){
         cadenaAtomos = inicializarString();
     }
+    if(!cadenaAtomosValores){
+        cadenaAtomosValores = inicializarString();
+    }
     cadenaAtomos = agregarChar(cadenaAtomos, caracter);
+    cadenaAtomosValores = agregarChar(cadenaAtomosValores, valor);
     numAtomos++;
 }
 
@@ -386,10 +422,44 @@ void printTabla(char *titulo, char **tabla, int numElementos){
     }    
 }
 
+//Funcion para imprimir la tabla de simbolos:
+//Recibe: titulo de la tabla, arreglo, longitud del arreglo.
+void printTablaTS(char *titulo, char **tabla, int numElementos){
+    int i = 0;
+    char tipoIdent[8];
+
+    printf("\n\n---------------------------------------------------\n");
+    printf("%s:\n", titulo);        //Se imprime el titulo
+    
+    for(i=0; i<(numValoresIdentificadores); i++){
+            printf("Aqui");
+            strcpy(tipoIdent, getTipoIdent(valoresIdentificadores[i]));
+            printf("\t%d\t%s\t%s\n", i, tabla[i], tipoIdent);      //Se imprime cada cadena guardada
+    }    
+    for(i;i<(numElementos);i++){
+        printf("\n\n\t -ERROR SEMANTICO: %s no declarado.\n\n", tabla[i]);      //Se imprime error si se detecta que una variable no se declaro
+    }
+}
+
+char* getTipoIdent(char val){
+    switch(val){
+        case 'b':
+            return("Bul");
+        case 'c':
+            return("Cadena");
+        case 'e':
+            return("Entero");
+        case 'd':
+            return("Real");
+        default:
+            return(NULL);    
+    }
+}
+
 //FUNCIONES PARA ANALISIS SINTACTICO:
 //Funcion que regresa el siguiente atomo de la cadena de atomos:
 char getNextAtomo(){
-    return cadenaAtomos[atomIndex++];
+    return(cadenaAtomos[atomIndex++]);
 }
 
 //Funcion que regresa un mensaje de error indicando el atomo y ubicacion en la cadena de atomos:
@@ -403,6 +473,7 @@ void error(){
 //Funcion con las instrucciones para realizar el analisis sintactico:
 int anSintactico(){
     c = getNextAtomo();
+    atr = getValorToken();
     G();
     if(numErrSintacticos == 0){
         printf("Fin");
@@ -416,10 +487,12 @@ int anSintactico(){
 //Produccion G:
 void G(){
     if(c == '['){
-        c = getNextAtomo();    
+        c = getNextAtomo();
+        atr = getValorToken();    
         Z();
         if(c == ']'){
-            c = getNextAtomo();        
+            c = getNextAtomo();
+            atr = getValorToken();        
         }
         else{
             error();
@@ -473,15 +546,21 @@ void X(){
 
 //Produccion D:
 void D(){
+    char t, p, p1, t1;
     if(c == 'b' || c == 'c' || c == 'e' || c == 'd'){
-        J();
+        t = J();
         if(c == 'a'){
-            c = getNextAtomo();        
+            p = atr;
+            c = getNextAtomo();
+            atr = getValorToken();        
         }
         else{
             error();
         }
-        V();
+        t1 = t;
+        p1 = p;
+        asignaTipo(t1, p1);
+        V(t);
     }
     else{
         error();
@@ -489,38 +568,53 @@ void D(){
 }
 
 //Produccion J:
-void J(){
+char J(){
+    char valor = c;
     if(c == 'b'){
-        c = getNextAtomo();    
+        c = getNextAtomo();
+        atr = getValorToken();    
     }
     else if(c == 'c'){
-        c = getNextAtomo();    
+        c = getNextAtomo();
+        atr = getValorToken();    
     }
     else if(c == 'e'){
-        c = getNextAtomo();    
+        c = getNextAtomo();
+        atr = getValorToken();    
     }
     else if(c == 'd'){
-        c = getNextAtomo();    
+        c = getNextAtomo();
+        atr = getValorToken();    
     }
     else{
         error();
     }
+    return(valor);
 }
 
 //Produccion V:
-void V(){
+void V(char t){
+    char p, p1, t1;
     if(c == ','){
-        c = getNextAtomo();    
+        c = getNextAtomo();
+        atr = getValorToken();    
         if(c == 'a'){
-            c = getNextAtomo();        
+            p = atr;
+
+            c = getNextAtomo();
+            atr = getValorToken();        
         }
         else{
             error();
         }
-        V();
+        t1 = t;
+        p1 = p;
+        asignaTipo(t1, p1);
+        V(t);
     }
     else if(c == ';'){
-        c = getNextAtomo();    
+        c = getNextAtomo();
+        atr = getValorToken();    
     }
     else{
         error();
@@ -532,7 +626,8 @@ void S(){
     if(c == 'a'){
         A();
         if(c == ';'){
-            c = getNextAtomo();        
+            c = getNextAtomo();
+            atr = getValorToken();        
         }
         else{
             error();
@@ -558,9 +653,11 @@ void S(){
 //Produccion A:
 void A(){
     if(c == 'a'){
-        c = getNextAtomo();    
+        c = getNextAtomo();
+        atr = getValorToken();    
         if(c == '='){
-            c = getNextAtomo();        
+            c = getNextAtomo();
+            atr = getValorToken();        
         }
         else{
             error();
@@ -575,41 +672,48 @@ void A(){
 //Produccion H:
 void H(){
     if(c == 'h'){
-        c = getNextAtomo();    
+        c = getNextAtomo();
+        atr = getValorToken();    
         if(c == '['){
-            c = getNextAtomo();        
+            c = getNextAtomo();
+            atr = getValorToken();        
         }
         else{
             error();
         }
         Y();
         if(c == ']'){
-            c = getNextAtomo();        
+            c = getNextAtomo();
+            atr = getValorToken();        
         }
         else{
             error();
         }
         if(c == 'm'){
-            c = getNextAtomo();        
+            c = getNextAtomo();
+            atr = getValorToken();        
         }
         else{
             error();
         }
         if(c == '('){
-            c = getNextAtomo();        
+            c = getNextAtomo();
+            atr = getValorToken();        
         }
         else{
             error();
         }
         R();
         if(c == ')'){
-            c = getNextAtomo();        
+            c = getNextAtomo();
+            atr = getValorToken();        
         }
         else{
             error();
         }
         if(c == ';'){
-            c = getNextAtomo();        
+            c = getNextAtomo();
+            atr = getValorToken();        
         }
         else{
             error();
@@ -623,29 +727,34 @@ void H(){
 //Produccion M:
 void M(){
     if(c == 'm'){
-        c = getNextAtomo();    
+        c = getNextAtomo();
+        atr = getValorToken();    
         if(c == '('){
-            c = getNextAtomo();        
+            c = getNextAtomo();
+            atr = getValorToken();        
         }
         else{
             error();
         }
         R();
         if(c == ')'){
-            c = getNextAtomo();        
+            c = getNextAtomo();
+            atr = getValorToken();        
         }
         else{
             error();
         }
         if(c == '['){
-            c = getNextAtomo();        
+            c = getNextAtomo();
+            atr = getValorToken();        
         }
         else{
             error();
         }
         Y();
         if(c == ']'){
-            c = getNextAtomo();        
+            c = getNextAtomo();
+            atr = getValorToken();        
         }
         else{
             error();
@@ -659,43 +768,50 @@ void M(){
 //Produccion P:
 void P(){
     if(c == 'p'){
-        c = getNextAtomo();    
+        c = getNextAtomo();
+        atr = getValorToken();    
         if(c == '('){
-            c = getNextAtomo();        
+            c = getNextAtomo();
+            atr = getValorToken();        
         }
         else{
             error();
         }
         A();
         if(c == ';'){
-            c = getNextAtomo();        
+            c = getNextAtomo();
+            atr = getValorToken();        
         }
         else{
             error();
         }
         R();
         if(c == ';'){
-            c = getNextAtomo();        
+            c = getNextAtomo();
+            atr = getValorToken();        
         }
         else{
             error();
         }
         A();
         if(c == ')'){
-            c = getNextAtomo();        
+            c = getNextAtomo();
+            atr = getValorToken();        
         }
         else{
             error();
         }
         if(c == '['){
-            c = getNextAtomo();        
+            c = getNextAtomo();
+            atr = getValorToken();        
         }
         else{
             error();
         }
         Y();
         if(c == ']'){
-            c = getNextAtomo();        
+            c = getNextAtomo();
+            atr = getValorToken();        
         }
         else{
             error();
@@ -709,29 +825,34 @@ void P(){
 //Produccion I:
 void I(){
     if(c == 'i'){
-        c = getNextAtomo();    
+        c = getNextAtomo();
+        atr = getValorToken();    
         if(c == '('){
-            c = getNextAtomo();        
+            c = getNextAtomo();
+            atr = getValorToken();        
         }
         else{
             error();
         }
         R();
         if(c == ')'){
-            c = getNextAtomo();        
+            c = getNextAtomo();
+            atr = getValorToken();        
         }
         else{
             error();
         }
         if(c == '['){
-            c = getNextAtomo();        
+            c = getNextAtomo();
+            atr = getValorToken();        
         }
         else{
             error();
         }
         Y();
         if(c == ']'){
-            c = getNextAtomo();        
+            c = getNextAtomo();
+            atr = getValorToken();        
         }
         else{
             error();
@@ -749,16 +870,19 @@ void N(){
         return;
     }
     else if(c == 'o'){
-        c = getNextAtomo();    
+        c = getNextAtomo();
+        atr = getValorToken();    
         if(c == '['){
-            c = getNextAtomo();        
+            c = getNextAtomo();
+            atr = getValorToken();        
         }
         else{
             error();
         }
         Y();
         if(c == ']'){
-            c = getNextAtomo();        
+            c = getNextAtomo();
+            atr = getValorToken();        
         }
         else{
             error();
@@ -772,16 +896,19 @@ void N(){
 //Produccion K:
 void K(){
     if(c == 's'){
-        c = getNextAtomo();    
+        c = getNextAtomo();
+        atr = getValorToken();    
     }
     else if(c == '(' || c == 'a' || c == 'n' || c == 'r'){
         E();
     }
     else if(c == 't'){
-        c = getNextAtomo();    
+        c = getNextAtomo();
+        atr = getValorToken();    
     }
     else if(c == 'f'){
-        c = getNextAtomo();    
+        c = getNextAtomo();
+        atr = getValorToken();    
     }
     else{
         error();
@@ -815,22 +942,28 @@ void Q(){
 //Produccion O:
 void O(){
     if(c == '!'){
-        c = getNextAtomo();    
+        c = getNextAtomo();
+        atr = getValorToken();    
     }
     else if(c == 'q'){
-        c = getNextAtomo();    
+        c = getNextAtomo();
+        atr = getValorToken();    
     }
     else if(c == '<'){
-        c = getNextAtomo();    
+        c = getNextAtomo();
+        atr = getValorToken();    
     }
     else if(c == 'l'){
-        c = getNextAtomo();    
+        c = getNextAtomo();
+        atr = getValorToken();    
     }
     else if(c == '>'){
-        c = getNextAtomo();    
+        c = getNextAtomo();
+        atr = getValorToken();    
     }
     else if(c == 'g'){
-        c = getNextAtomo();    
+        c = getNextAtomo();
+        atr = getValorToken();    
     }
     else{
         error();
@@ -851,12 +984,14 @@ void E(){
 //Produccion EP:
 void EP(){
     if(c == '+'){
-        c = getNextAtomo();    
+        c = getNextAtomo();
+        atr = getValorToken();    
         T();
         EP();
     }
     else if(c == '-'){
-        c = getNextAtomo();    
+        c = getNextAtomo();
+        atr = getValorToken();    
         T();
         EP();
     }
@@ -882,17 +1017,20 @@ void T(){
 //Produccion TP:
 void TP(){
     if(c == '*'){
-        c = getNextAtomo();    
+        c = getNextAtomo();
+        atr = getValorToken();    
         F();
         TP();
     }
     else if(c == '/'){
-        c = getNextAtomo();    
+        c = getNextAtomo();
+        atr = getValorToken();    
         F();
         TP();
     }
     else if(c == '%'){
-        c = getNextAtomo();    
+        c = getNextAtomo();
+        atr = getValorToken();    
         F();
         TP();
     }
@@ -907,28 +1045,56 @@ void TP(){
 //Produccion F:
 void F(){
     if(c == '('){
-        c = getNextAtomo();    
+        c = getNextAtomo();
+        atr = getValorToken();    
         E();
         if(c == ')'){
-            c = getNextAtomo();        
+            c = getNextAtomo();
+            atr = getValorToken();        
         }
         else{
             error();
         }
     }
     else if(c == 'a'){
-        c = getNextAtomo();    
+        c = getNextAtomo();
+        atr = getValorToken();    
     }
     else if(c == 'n'){
-        c = getNextAtomo();    
+        c = getNextAtomo();
+        atr = getValorToken();    
     }
     else if(c == 'r'){
-        c = getNextAtomo();    
+        c = getNextAtomo();
+        atr = getValorToken();    
     }
     else{
         error();
     }
 }
+
+
+char getValorToken(){
+    return cadenaAtomosValores[atomValueIndex++];
+}
+
+void asignaTipo(char t, char p){
+    int pInt = p - '0';
+    if(!valoresIdentificadores[pInt]){
+        valoresIdentificadores[pInt] = t;
+        numValoresIdentificadores++;
+    }else{
+        printf("\n\n\t -ERROR SEMANTICO: %s declarado multiples veces.\n\n", identificadores[pInt]);
+    }
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+//ANALISIS SINTACTICO:
+//Funcion que regresa el valor del Token:
+
+
+//Funcion que asigna el tipo a la variable:
+
 
 //Funcion que almacena cada etapa del analisis:
 void analisis(char *argv[]){
@@ -954,31 +1120,34 @@ void analisis(char *argv[]){
     yylex();                            //Se realiza el analisis lexico
     fclose(archSal);                    //Se cierra el archivo de salida
 
-    //Se realiza la impresion de cada una de las tablas:
-    printTabla("Tabla de simbolos", identificadores, numIdentficiadores);
+    //Se impremen las tablas de elementos:
     printTabla("Tabla de cadenas", constantesCadena, numConsCadena);
     printTabla("Tabla de enteros", constantesNumerica, numConsNum);
     printTabla("Tabla de reales", constantesReal, numConsReal);
 
+    //ANALISIS SINTACTICO-SEMANTICO:
+    valoresIdentificadores = (char *) calloc(numIdentificadores+1, sizeof(char));
+    do{
+        if(anSintactico() == 1){
+            printf("\n\n----- Es sintacticamente correcto. -----\n\n");
+        }
+    }while(c != '\0');
+
+    //Cadena de atomos:
+    printf("\nNumero de atomos: %d", numAtomos);
+    printf("\n%s\n\n", cadenaAtomos);
+
+    //Se realiza la impresion de los simbolos:
+    printTablaTS("Tabla de simbolos", identificadores, numIdentificadores);
+
     //Se realiza el guardado de cada tabla en archivo .txt:
-    generarArchivoTS("Tabla de simbolos.txt", identificadores, numIdentficiadores);
+    generarArchivoTS("Tabla de simbolos.txt", identificadores, numIdentificadores);
     generarArchivo("Constantes cadena.txt", constantesCadena, numConsCadena);
     generarArchivo("Constantes numericas.txt", constantesNumerica, numConsNum);
     generarArchivo("Constantes reales.txt", constantesReal, numConsReal);
     generarArchivo("Errores.txt", errores, numErrores);
 
     printf("\n");
-
-    //Cadena de atomos:
-    printf("\nNumero de atomos: %d", numAtomos);
-    printf("\n%s\n\n", cadenaAtomos);
-
-    //ANALISIS SINTACTICO:
-    do{
-        if(anSintactico() == 1){
-            printf("\nEs sintacticamente correcto.\n");
-        }
-    }while(c != '\0');
 
 }
 

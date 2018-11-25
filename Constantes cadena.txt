@@ -1,1 +1,3 @@
-0 "holi"
+0 "Introduzca una oracion: "
+1 "%c"
+2 "\n"

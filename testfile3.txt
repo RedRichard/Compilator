@@ -2,10 +2,13 @@ $$ Este es un comentario
 
 [
     Entero vari, var;
-    Cadena str;
+    Cadena str, var;
     vari := 6;
     
-    Si(vari .DIF. 5)[
+    Si(c .DIF. 5)[
+        str := "holi";
+    ]
+    Si(d .DIF. 5)[
         str := "holi";
     ]
 ]
